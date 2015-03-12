@@ -1,0 +1,130 @@
+<scene>
+
+  <spawn position="18 2 32" />
+
+  <skybox style="color: linear-gradient(#fff, #ccf)" />
+
+  <script src="scripts/puckman.js" />
+
+  <plane position="20 0.01 20" style="color: #000" scale="46 46 0" rotation="-1.5707 0 0" />
+
+  <script>
+    <![CDATA[
+
+    var tick = 0,
+    	audio = {
+    		play : function(soundfile){
+    			// todo...
+    		}
+    	};
+
+  	function drawMap(){
+  		var x,y;
+
+  		var i, 
+  			ghosts = [],
+  			map = new Puckman.Map(10),
+        colors = ["#00FFDE", "#FF0000", "#FFB8DE", "#FFB847"];
+
+  		for(x=0;x<20;x++){
+  			for(y=0;y<20;y++){
+  				var piece = Puckman.MAP[y][x];
+
+  				if(piece===0){
+  					// wall
+  					var box = document.createElement("box");
+  					box.style.color = "#05f";
+  					box.position = new Vector(x, 0.25, y).multiplyScalar(2);
+  					box.scale = new Vector(2,1,2);
+  					document.scene.appendChild(box);
+  				}else if(piece===1){
+  					// dot
+  					(function(x,y){
+	  					var box = document.createElement("box");
+	  					box.style.color = "#eee";
+	  					box.style.collision = "none";
+	  					box.position = new Vector(x, 0.25, y).multiplyScalar(2);
+	  					box.scale = new Vector(0.25,0.25,0.25);
+	  					document.scene.appendChild(box);
+
+	  					box.addEventListener("collide", function(){
+	  						document.scene.removeChild(box);
+	  					});
+	  				})(x,y);
+  				}else if(piece==4){
+  					(function(x,y){
+	  					// power up
+	  					var box = document.createElement("box");
+	  					box.className = "powerup";
+	  					box.style.color = "#eee";
+	  					box.style.collision = "none";
+	  					box.position = new Vector(x, 0.25, y).multiplyScalar(2);
+	  					box.scale = new Vector(0.5,0.5,0.5);
+	  					document.scene.appendChild(box);
+
+	  					box.addEventListener("collide", function(){
+	  						document.scene.removeChild(box);
+
+								ghosts.forEach(function(ghost){
+									ghost.makeEatable();
+								});
+	  					})
+  					})(x,y);
+  				}
+  			}
+  		}
+
+  		colors.forEach(function(color){
+  			var ghost = new Ghost({
+  				getTick:function(){ 
+  					return tick;
+  				}
+  			}, map, color);
+
+  			ghost.reset();
+
+      	var box = document.createElement("box");
+      	box.addEventListener('collide', function(e){
+      		if(ghost.isVunerable()){
+	          console.log((e.player.name || "Anonymous") + " ate a ghost!");
+	          audio.play("eatghost");
+      			ghost.eat();
+      		}else if(ghost.isDangerous()){
+            audio.play("die");
+            e.player.respawn("you were eaten by a hungry hungry ghost");
+          }
+      	});
+      	box.style.collision = "none";
+
+      	document.scene.appendChild(box);
+
+      	ghost.box = box;
+  			ghosts.push(ghost);
+				ghost.move();
+      });
+
+  		setInterval(function(){
+  			document.querySelectorAll("box.powerup").forEach(function(box){
+  				box.rotation.y += 1;
+  			});
+  		}, 1000 / 5);
+
+  		setInterval(function(){
+  			tick++;
+
+  			ghosts.forEach(function(ghost){
+  				ghost.move();
+  				ghost.draw();
+  				ghost.box.position = new Vector(ghost.getPosition().x / 5, 1, ghost.getPosition().y / 5)
+	      	ghost.box.style.color = ghost.getColour();
+  			});
+  		}, 1000 / Puckman.FPS);
+  	}
+
+  	console.log("FPS: " + Puckman.FPS);
+
+  	drawMap();
+
+  	]]>
+  </script>
+</scene>
