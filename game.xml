@@ -1,12 +1,14 @@
 <scene>
 
-  <spawn position="18 2 32" />
+  <spawn position="18 -1 51" />
 
   <skybox style="color: linear-gradient(#000, #50a)" />
 
   <script src="scripts/puckman.js" />
 
   <plane position="20 0.01 20" style="color: #000" scale="1000 1000 0" rotation="-1.5707 0 0" />
+
+  <box id="ceiling" position="20 1.5 20" style="visibility: hidden" scale="1000 0.1 1000" />
 
   <billboard id="scoreboard" position="18 10 0" scale="15 15 1" rotation="0.7 0 0"><![CDATA[
 
@@ -23,8 +25,7 @@
     	},
       ghosts = [],
       scores = {
-        'toastman' : 10,
-        'anonymous' : 0
+        'toastman' : 10
       };
 
     function updateScores(){
@@ -45,12 +46,12 @@
       document.getElementById("scoreboard").firstChild.data = html;
     }
 
-    function scorePoint(name){
+    function scorePoint(name, count){
       scores[name] = scores[name] || 0;
-      scores[name] += 1;
+      scores[name] += count;
     }
 
-    scorePoint('dave');
+    scorePoint('anonymous', 0);
 
   	function reset(){
       var blocks = document.querySelectorAll(".wall, .pill, .powerup");
@@ -70,24 +71,32 @@
 
   				if(piece===0){
   					var box = document.createElement("box");
-  					box.style.color = "#05f";
+  					box.style.color = "#027";
             box.className = "wall";
   					box.position = new Vector(x, 0.25, y).multiplyScalar(2);
   					box.scale = new Vector(2,1,2);
   					document.scene.appendChild(box);
+
+            box = document.createElement("box");
+            box.style.color = "#05f";
+            box.className = "wall";
+            box.collision = "none";
+            box.position = new Vector(x, 0.25, y).multiplyScalar(2);
+            box.scale = new Vector(2.1,0.1,2.1);
+            document.scene.appendChild(box);
   				}else if(piece===1){
   					// pill
   					(function(x,y){
 	  					var box = document.createElement("box");
 	  					box.style.color = "#eee";
               box.className = "pill";
-	  					box.style.collision = "trigger";
+	  					box.style.collisionResponse = "false";
 	  					box.position = new Vector(x, 0.25, y).multiplyScalar(2);
 	  					box.scale = new Vector(0.25,0.25,0.25);
 	  					document.scene.appendChild(box);
 
 	  					box.addEventListener("collide", function(e){
-                scorePoint(e.player.name || "anonymous");
+                scorePoint(e.player.name || "anonymous", 10);
 	  						document.scene.removeChild(box);
 	  					});
 	  				})(x,y);
@@ -97,19 +106,17 @@
 	  					var box = document.createElement("box");
 	  					box.className = "powerup";
 	  					box.style.color = "#eee";
-	  					box.style.collision = "trigger";
+	  					box.style.collisionResponse = "false";
 	  					box.position = new Vector(x, 0.25, y).multiplyScalar(2);
 	  					box.scale = new Vector(0.5,0.5,0.5);
 	  					document.scene.appendChild(box);
 
 	  					box.addEventListener("collide", function(e){
+                scorePoint(e.player.name || "anonymous", 50);
 	  						document.scene.removeChild(box);
-
 								ghosts.forEach(function(ghost){
 									ghost.makeEatable();
 								});
-
-                e.player.respawn("ghost killed you");
 	  					})
   					})(x,y);
   				}
@@ -129,10 +136,15 @@
 
       	var box = document.createElement("model");
         box.src = "/models/ghost.obj";
+        box.style.collisionResponse = "false";
         box.scale = new Vector(0.75, 0.75, 0.75);
       	box.addEventListener('collide', function(e){
       		if(ghost.isVunerable()){
 	          console.log((e.player.name || "Anonymous") + " ate a ghost!");
+
+            // todo - score is 50 * number of ghosts eaten in this vulnerability phase
+            scorePoint(e.player.name || "anonymous", 50);
+
 	          audio.play("eatghost");
       			ghost.eat();
       		}else if(ghost.isDangerous()){
@@ -140,7 +152,6 @@
             e.player.respawn("you were eaten by a hungry hungry ghost");
           }
       	});
-      	box.style.collision = "none";
 
       	document.scene.appendChild(box);
 
