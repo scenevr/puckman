@@ -731,6 +731,18 @@ var Ghost = function (game, map, colour) {
         "getColour"   : getColour,
         "getPosition"    : function(){
             return position;
+        },
+        "getDirection" : function(){
+            switch(direction){
+                case UP:
+                    return 0;
+                case RIGHT:
+                    return -Math.PI * 0.5;
+                case DOWN:
+                    return Math.PI;
+                case LEFT:
+                    return Math.PI * 0.5;
+            }
         }
     };
 };
