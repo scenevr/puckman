@@ -6,7 +6,7 @@
 
   <script src="scripts/puckman.js" />
 
-  <plane position="20 0.01 20" style="color: #000" scale="1000 1000 0" rotation="-1.5707 0 0" />
+  <plane position="20 0.01 20" style="texture-map: url(/images/grid.png); texture-repeat: 1000 1000;" scale="1000 1000 0" rotation="-1.5707 0 0" />
 
   <box id="ceiling" position="20 1.5 20" style="visibility: hidden" scale="1000 0.1 1000" />
 
