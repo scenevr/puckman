@@ -47,6 +47,10 @@
         html += "<tr style='border-bottom: 1px solid #0af; line-height: 40px;'><td>" + name + "</td><td>" + scores[name] + "</td></tr>";
       });
 
+      var pillCount = document.querySelectorAll("box.pill").length;
+
+      html += "<tr style='border-bottom: 2px solid #0af; line-height: 40px;'><td>Pills remaining</td><td>" + pillCount + "</td></tr>";
+
       html += "</table></div>";
 
       document.getElementById("scoreboard").firstChild.data = html;
@@ -58,10 +62,10 @@
     }
 
     function checkGameStatus(){
-      // if (document.querySelectorAll("model.pill").length === 0) {
-      //   console.log("Game won! Resetting.")
-      //   reset();
-      // }
+      if (document.querySelectorAll("box.pill").length === 0) {
+        console.log("Game won! Resetting.")
+        reset();
+      }
     }
 
     var map = new Puckman.Map(10);
@@ -88,14 +92,12 @@
   				if(piece===0){
   					var box = document.createElement("box");
   					box.style.color = "#027";
-            box.className = "wall";
   					box.position = new Vector(x, 0.25, y).multiplyScalar(2);
   					box.scale = new Vector(2,1,2);
   					document.scene.appendChild(box);
 
             box = document.createElement("box");
             box.style.color = "#05f";
-            box.className = "wall";
             box.collision = "none";
             box.position = new Vector(x, 0.25, y).multiplyScalar(2);
             box.scale = new Vector(2.1,0.1,2.1);
@@ -107,7 +109,7 @@
 	  					box.style.color = "#eee";
               box.className = "pill";
 	  					box.style.collisionResponse = "false";
-	  					box.position = new Vector(x, 0.25, y).multiplyScalar(2);
+	  					box.position = new Vector(x, 0.4, y).multiplyScalar(2);
 	  					box.scale = new Vector(0.25,0.25,0.25);
 	  					document.scene.appendChild(box);
 
@@ -131,9 +133,8 @@
 
 	  					box.addEventListener("collide", function(e){
                 scorePoint(e.player.name || "anonymous", 50);
-                document.getElementById('powerpill').play();
 	  						document.scene.removeChild(box);
-                checkGameStatus();
+                document.getElementById('powerpill').play();
 								ghosts.forEach(function(ghost){
 									ghost.makeEatable();
 								});
@@ -146,14 +147,19 @@
 
     ghosts = [];
 
-    var colors = ["#00FFDE", "#FF0000", "#FFB8DE", "#FFB847"];
+    var ghostTypes = [
+      { color: "#00FFDE", name: "Inky" },
+      { color: "#FF0000", name: "Blinky" },
+      { color: "#FFB8DE", name: "Clyde" },
+      { color: "#FFB847", name: "Pinky" }
+    ];
 
-		colors.forEach(function(color){
+		ghostTypes.forEach(function(ghostType){
 			var ghost = new Ghost({
 				getTick:function(){ 
 					return tick;
 				}
-			}, map, color);
+			}, map, ghostType.color);
 
 			ghost.reset();
 
@@ -163,14 +169,14 @@
       box.scale = new Vector(0.75, 0.75, 0.75);
     	box.addEventListener('collide', function(e){
     		if(ghost.isVunerable()){
-          console.log((e.player.name || "Anonymous") + " ate a ghost!");
+          console.log((e.player.name || "Anonymous") + " ate " + ghostType.name + ".");
           // todo - score is 50 * number of ghosts eaten in this vulnerability phase
           scorePoint(e.player.name || "anonymous", 50);
           document.getElementById('eatghost').play();
     			ghost.eat();
     		}else if(ghost.isDangerous()){
           document.getElementById('die').play();
-          e.player.respawn("you were eaten by a hungry hungry ghost");
+          e.player.respawn("you were eaten by " + ghostType.name + ".");
         }
     	});
 
@@ -204,41 +210,6 @@
     }, 1000 / Puckman.FPS);
 
   	reset();
-
-    // Can't get this to work :'(
-    
-    /*
-    Puckman.WALLS.forEach(function(wall){
-      var coordinates = [];
-
-      wall.forEach(function(w){
-        coordinates = coordinates.concat([w.move || w.curve || w.line]);
-      });
-
-      console.log(coordinates);
-
-      var v = new Vector(coordinates[0][0], 0.25, coordinates[0][1]).multiplyScalar(2);
-
-      coordinates.forEach(function(coord){
-        var nextV = new Vector(coord[0], 0.25, coord[1]).multiplyScalar(2);
-
-        console.log(v.toArray(), nextV.toArray())
-
-        var box = document.createElement("box");
-        box.style.color = "#05f";
-        box.position = v;
-        box.scale = new Vector(
-          Math.max(0.2, Math.abs(nextV.x - v.x)),
-          1,
-          Math.max(0.2, Math.abs(nextV.z - v.z))
-        );
-        document.scene.appendChild(box);
-        console.log("s", box.scale.toArray());
-
-        v = nextV;
-      })
-    });
-*/
   	]]>
   </script>
 </scene>
