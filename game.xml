@@ -2,6 +2,12 @@
 
   <spawn position="18 -1 51" />
 
+  <audio id="waka" src="/audio/waka.mp3" position="0 0 0" />
+  <audio id="powerpill" src="/audio/powerpill.mp3" position="0 0 0" />
+  <audio id="eatghost" src="/audio/eatghost.mp3" position="0 0 0" />
+  <audio id="theme" src="/audio/theme.mp3" position="0 0 0" />
+  <audio id="die" src="/audio/die.mp3" position="0 0 0" />
+
   <skybox style="color: linear-gradient(#000, #50a)" />
 
   <script src="scripts/puckman.js" />
@@ -51,19 +57,29 @@
       scores[name] += count;
     }
 
-    scorePoint('anonymous', 0);
+    function checkGameStatus(){
+      // if (document.querySelectorAll("model.pill").length === 0) {
+      //   console.log("Game won! Resetting.")
+      //   reset();
+      // }
+    }
+
+    var map = new Puckman.Map(10);
 
   	function reset(){
-      var blocks = document.querySelectorAll(".wall, .pill, .powerup");
+      var blocks = document.querySelectorAll("box.wall,box.pill,box.powerup");
       blocks.forEach(function(block){
         document.scene.removeChild(block);
       });
 
   		var x,y;
 
-  		var i, 
-  			map = new Puckman.Map(10),
-        colors = ["#00FFDE", "#FF0000", "#FFB8DE", "#FFB847"];
+      scores = {
+        'toastman' : 10
+      };
+      scorePoint('anonymous', 0);
+
+  		var i;
 
   		for(x=0;x<20;x++){
   			for(y=0;y<20;y++){
@@ -98,6 +114,8 @@
 	  					box.addEventListener("collide", function(e){
                 scorePoint(e.player.name || "anonymous", 10);
 	  						document.scene.removeChild(box);
+                document.getElementById('waka').play();
+                checkGameStatus();
 	  					});
 	  				})(x,y);
   				}else if(piece==4){
@@ -113,7 +131,9 @@
 
 	  					box.addEventListener("collide", function(e){
                 scorePoint(e.player.name || "anonymous", 50);
+                document.getElementById('powerpill').play();
 	  						document.scene.removeChild(box);
+                checkGameStatus();
 								ghosts.forEach(function(ghost){
 									ghost.makeEatable();
 								});
@@ -122,54 +142,54 @@
   				}
   			}
   		}
+    }
 
-      ghosts = [];
+    ghosts = [];
 
-  		colors.forEach(function(color){
-  			var ghost = new Ghost({
-  				getTick:function(){ 
-  					return tick;
-  				}
-  			}, map, color);
+    var colors = ["#00FFDE", "#FF0000", "#FFB8DE", "#FFB847"];
 
-  			ghost.reset();
+		colors.forEach(function(color){
+			var ghost = new Ghost({
+				getTick:function(){ 
+					return tick;
+				}
+			}, map, color);
 
-      	var box = document.createElement("model");
-        box.src = "/models/ghost.obj";
-        box.style.collisionResponse = "false";
-        box.scale = new Vector(0.75, 0.75, 0.75);
-      	box.addEventListener('collide', function(e){
-      		if(ghost.isVunerable()){
-	          console.log((e.player.name || "Anonymous") + " ate a ghost!");
+			ghost.reset();
 
-            // todo - score is 50 * number of ghosts eaten in this vulnerability phase
-            scorePoint(e.player.name || "anonymous", 50);
+    	var box = document.createElement("model");
+      box.src = "/models/ghost.obj";
+      box.style.collisionResponse = "false";
+      box.scale = new Vector(0.75, 0.75, 0.75);
+    	box.addEventListener('collide', function(e){
+    		if(ghost.isVunerable()){
+          console.log((e.player.name || "Anonymous") + " ate a ghost!");
+          // todo - score is 50 * number of ghosts eaten in this vulnerability phase
+          scorePoint(e.player.name || "anonymous", 50);
+          document.getElementById('eatghost').play();
+    			ghost.eat();
+    		}else if(ghost.isDangerous()){
+          document.getElementById('die').play();
+          e.player.respawn("you were eaten by a hungry hungry ghost");
+        }
+    	});
 
-	          audio.play("eatghost");
-      			ghost.eat();
-      		}else if(ghost.isDangerous()){
-            audio.play("die");
-            e.player.respawn("you were eaten by a hungry hungry ghost");
-          }
-      	});
+    	document.scene.appendChild(box);
 
-      	document.scene.appendChild(box);
-
-      	ghost.box = box;
-  			ghosts.push(ghost);
-				ghost.move();
-      });
-  	}
+    	ghost.box = box;
+			ghosts.push(ghost);
+			ghost.move();
+    });
 
     setInterval(function(){
       document.querySelectorAll("box.powerup").forEach(function(box){
         box.rotation.y += 1;
       });
-    }, 1000 / 5);
+    }, 1000 / document.scene.ticksPerSecond);
 
     setInterval(function(){
       updateScores();
-    }, 1000 * 3);
+    }, 1000 * 5);
 
     setInterval(function(){
       tick++;

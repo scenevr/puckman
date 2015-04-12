@@ -1241,5 +1241,5 @@ Puckman.Audio = function(game) {
     };
 };
 
-Puckman.FPS = 15;
+Puckman.FPS = 10;
 
