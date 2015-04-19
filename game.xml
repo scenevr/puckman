@@ -1,7 +1,9 @@
 <scene>
 
-  <spawn position="18 -1 51" />
+  <spawn position="18 0 51" />
 
+  <fog near="100" far="500" style="color: black" />
+  
   <audio id="waka" src="/audio/waka.mp3" position="0 0 0" />
   <audio id="powerpill" src="/audio/powerpill.mp3" position="0 0 0" />
   <audio id="eatghost" src="/audio/eatghost.mp3" position="0 0 0" />
@@ -12,9 +14,9 @@
 
   <script src="scripts/puckman.js" />
 
-  <plane position="20 0.01 20" style="texture-map: url(/images/grid.png); texture-repeat: 1000 1000;" scale="1000 1000 0" rotation="-1.5707 0 0" />
+  <plane position="20 0.01 20" style="texture-map: url(/images/grid.png); texture-repeat: 2000 2000;" scale="2000 2000 0" rotation="-1.5707 0 0" />
 
-  <box id="ceiling" position="20 1.5 20" style="visibility: hidden" scale="1000 0.1 1000" />
+  <box id="ceiling" position="20 2.5 20" style="visibility: hidden" scale="40 2 40" />
 
   <billboard id="scoreboard" position="18 10 0" scale="15 15 1" rotation="0.7 0 0"><![CDATA[
 
