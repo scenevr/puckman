@@ -10,13 +10,17 @@
   <audio id="theme" src="/audio/theme.mp3" position="0 0 0" />
   <audio id="die" src="/audio/die.mp3" position="0 0 0" />
 
+  <!-- Observation platofrm -->
+  <box position="10 6 44" scale="10 1 1" style="color: #333" rotation="0 0 0" />
+  <box position="18.2 2.5 44" scale="10 1 1" style="color: #333" rotation="0 0 -0.78" />
+
   <skybox style="color: linear-gradient(#000, #50a)" />
 
   <script src="scripts/puckman.js" />
 
-  <plane position="20 0.01 20" style="texture-map: url(/images/grid.png); texture-repeat: 2000 2000;" scale="2000 2000 0" rotation="-1.5707 0 0" />
+  <plane position="20 0.01 20" style="texture-map: url(/images/grid.png); texture-repeat: 2000 2000;" scale="2000 2000 0" rotation="-1.57079632 0 0" />
 
-  <box id="ceiling" position="20 2.5 20" style="visibility: hidden" scale="40 2 40" />
+  <box id="ceiling" position="20 2.4 20" style="visibility: hidden" scale="40 1 40" />
 
   <billboard id="scoreboard" position="18 10 0" scale="15 15 1" rotation="0.7 0 0"><![CDATA[
 
