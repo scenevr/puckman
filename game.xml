@@ -2,6 +2,7 @@
 
   <spawn position="18 0 51" />
 
+  <skybox style="color: linear-gradient(#000, #50a)" />
   <fog near="100" far="500" style="color: black" />
   
   <audio id="waka" src="/audio/waka.mp3" position="0 0 0" />
@@ -11,19 +12,20 @@
   <audio id="die" src="/audio/die.mp3" position="0 0 0" />
 
   <!-- Observation platofrm -->
-  <box position="10 6 44" scale="10 1 1" style="color: #333" rotation="0 0 0" />
-  <box position="18.2 2.5 44" scale="10 1 1" style="color: #333" rotation="0 0 -0.78" />
+  <box position="0 6 44" scale="10 1 1" style="color: #333" rotation="0 0 0" />
+  <box position="8.2 2.5 44" scale="10 1 1" style="color: #333" rotation="0 0 -0.78" />
 
-  <skybox style="color: linear-gradient(#000, #50a)" />
+  <billboard position="12 0.5 43" scale="1 1 0.1"><![CDATA[
+    <div style="margin-left: 40px; font-size: 80px; font-weight: bold">&larr;<br />The<br /> Cheap<br />Seats</div>
+  ]]></billboard>
 
   <script src="scripts/puckman.js" />
 
-  <plane position="20 0.01 20" style="texture-map: url(/images/grid.png); texture-repeat: 2000 2000;" scale="2000 2000 0" rotation="-1.57079632 0 0" />
+  <plane position="20 0.02 20" style="texture-map: url(/images/grid.png); texture-repeat: 2000 2000;" scale="2000 2000 0" rotation="-1.57079632 0 0" />
 
   <box id="ceiling" position="20 2.4 20" style="visibility: hidden" scale="40 1 40" />
 
   <billboard id="scoreboard" position="18 10 0" scale="15 15 1" rotation="0.7 0 0"><![CDATA[
-
   ]]></billboard>
 
   <script>
